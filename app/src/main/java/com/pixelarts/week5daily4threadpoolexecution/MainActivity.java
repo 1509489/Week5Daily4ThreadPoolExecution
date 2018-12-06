@@ -2,11 +2,16 @@ package com.pixelarts.week5daily4threadpoolexecution;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
+    private String TAG = "MainActivity";
     private ProgressBar t1Progress, t2Progress, t3Progress, t4Progress;
+    TextView stats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,16 +22,25 @@ public class MainActivity extends AppCompatActivity {
         t2Progress = findViewById(R.id.pbThread2);
         t3Progress = findViewById(R.id.pbThread3);
         t4Progress = findViewById(R.id.pbThread4);
+        stats = findViewById(R.id.tvStats);
+    }
 
-        startTask();
+    public void onClicked(View view){
+        switch (view.getId())
+        {
+            case R.id.btnStartTask:
+                startTask();
+                break;
+            case R.id.btnShowStats:
+                stats.setText(TaskManager.getInstance().showStats());
+        }
     }
 
     private void startTask()
     {
-        Thread thread1 = new Thread(new Runnable() {
+        Runnable task1 = new Runnable() {
             @Override
             public void run() {
-                t1Progress.setProgress(0);
                 for (int i = 0; i < 100; i++){
                     t1Progress.setProgress(i);
                     try {
@@ -36,13 +50,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
-        thread1.start();
+        };
 
-        Thread thread2 = new Thread(new Runnable() {
+        Runnable task2 = new Runnable() {
             @Override
             public void run() {
-                t2Progress.setProgress(0);
                 for (int i = 0; i < 100; i++){
                     t2Progress.setProgress(i);
                     try {
@@ -52,29 +64,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
-        thread2.start();
+        };
 
-        Thread thread3 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            t3Progress.setProgress(0);
-            for (int i = 0; i < 100; i++){
-                t3Progress.setProgress(i);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    });
-        thread3.start();
-
-        Thread thread4 = new Thread(new Runnable() {
+        Runnable task3 = new Runnable() {
             @Override
             public void run() {
-                t4Progress.setProgress(0);
+                for (int i = 0; i < 100; i++){
+                    t3Progress.setProgress(i);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        Runnable task4 = new Runnable() {
+            @Override
+            public void run() {
                 for (int i = 0; i < 100; i++){
                     t4Progress.setProgress(i);
                     try {
@@ -84,7 +92,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
-        thread4.start();
+        };
+
+        TaskManager.getInstance().runTask(task1);
+        TaskManager.getInstance().runTask(task2);
+        TaskManager.getInstance().runTask(task3);
+        TaskManager.getInstance().runTask(task4);
+
     }
 }
